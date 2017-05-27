@@ -70,31 +70,21 @@ public class WebRtcClient {
         @Override public void execute(String peerId, JSONObject payload) throws JSONException {
 
             Peer peer = peers.get(peerId);
-            peer.pc.createOffer(peer,pcConstraints);
+            peer.pc.createOffer(peer, pcConstraints);
 
 
         }
     }
 
 
-
-
-
-
-
-
-    private class Peer implements SdpObserver,PeerConnection.Observer{
+    private class Peer implements SdpObserver, PeerConnection.Observer {
 
         private PeerConnection pc;
         private String id;
         private int endPoint;
 
-        @Override public void onSignalingChange(final PeerConnection.SignalingState sdp) {
+        @Override public void onSignalingChange(PeerConnection.SignalingState signalingState) {
 
-            try{
-                JSONObject payload = new JSONObject();
-                payload.put("type",sdp)
-            }
 
         }
 
@@ -126,7 +116,20 @@ public class WebRtcClient {
 
         }
 
-        @Override public void onCreateSuccess(SessionDescription sessionDescription) {
+        @Override public void onCreateSuccess(SessionDescription sdp) {
+
+            try {
+                JSONObject payload = new JSONObject();
+                payload.put("type", sdp.type.canonicalForm());
+                payload.put("sdp", sdp.description);
+                sendMessage(id, sdp.type.canonicalForm(), payload);
+                pc.setLocalDescription(Peer.this, sdp);
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
 
         }
 
@@ -144,6 +147,15 @@ public class WebRtcClient {
     }
 
 
+    public void sendMessage(String to, String type, JSONObject payload) throws JSONException {
+
+        JSONObject message = new JSONObject();
+        message.put("to", to);
+        message.put("type", type);
+        message.put("payload", payload);
+        client.emit("message", message);
+
+    }
 
 
 }
