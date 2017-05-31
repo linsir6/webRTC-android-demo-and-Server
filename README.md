@@ -3,6 +3,14 @@
 > 一个webRTC Demo，你可以非常简单的运行起来它，之后我会继续优化的，现在只能实现P2P的聊天功能
 
 
+需要依赖：
+
+```
+compile 'com.android.support:appcompat-v7:22.0.0'
+compile 'com.github.nkzawa:socket.io-client:0.4.2'    //webSocket相关
+compile 'io.pristine:libjingle:8871@aar'    //webRTC官方aar包
+```
+
 
 如何运行它：
 
